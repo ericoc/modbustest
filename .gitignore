@@ -1,0 +1,16 @@
+__pycache__
+*.csv
+*.gz
+*.ini
+*.json
+*.log
+*.pid
+*.pyc
+*.save
+*.sql
+*.xml
+*~
+.*
+!.gitignore
+venv
+settings.py
