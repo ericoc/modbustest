@@ -1,0 +1,5 @@
+colorama==0.4.6
+modbus_cli==0.1.9
+pymodbus==3.7.0
+pyserial==3.5
+uModbus==1.0.4
