@@ -5,6 +5,8 @@
         danger
     {%- endif -%}
 {%- endmacro -%}
+{%- set coils_active = [] %}
+{%- set coils_inactive = [] %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,7 +28,7 @@
 
     <body class="card">
 
-        <header class="card-header container-fluid heading-text">
+        <header class="card-header container-fluid">
 
             <h1 title="Modbus" class="card-title">
                 <a class="card-text" href="{{ url_for('index') }}">Modbus</a>
@@ -36,28 +38,45 @@
 
         <main class="card-body">
 
-            <div class="card-title">
-                <a class="border border-dark card-text btn btn-secondary" href="{{ url_for('toggle_all') }}" role="button">
-                    Toggle All
-                </a>
-            </div>
-
-            <div class="card-text">
-
-                <ol class="list-group w-50">
+            <ol class="list-group list-group-horizontal list-group-flush">
 {%- for number, value in coils.items() %}
-                    <li class="my-1 list-group-item" title="{{ number }}: {{ value }}" value="{{ number }}">
-                        <b>{{ number }}</b>.
-                        <a class="border border-dark btn btn-{{ coil_class(value) }} list-group-item-text" href="{{ url_for('toggle', coil=number, value=not value) }}" role="button" title="Toggle coil #{{ number }} from {{ value }} to {{ not value }}.">
-                            {{ value }}
-                        </a>
-                    </li>
+    {%- if value %}
+        {%- set _ = coils_active.append(number) -%}
+    {%- else %}
+        {%- set _ = coils_inactive.append(number) -%}
+    {%- endif %}
+                <li class="border-0 card-text list-group-item fw-bold" title="Toggle coil #{{ number }} from {{ value }} to {{ not value }}." value="{{ number }}">
+                    {{ number }}.
+                    <a class="border border-dark btn btn-{{ coil_class(value) }} list-group-item-text m-0 p-0 text-{{ coil_class(value) }}" href="{{ url_for('toggle', coil=number, value=not value) }}" role="button" aria-label="Toggle coil #{{ number }} from {{ value }} to {{ not value }}.">
+                        █
+                    </a>
+                </li>
 {%- endfor %}
-                </ol>
-
-            </div>
+            </ol>
 
         </main>
+
+        <footer class="card-footer text-white">
+
+            <p>
+                <a class="border border-dark btn btn-secondary card-text" href="{{ url_for('toggle_all') }}" role="button">
+                    Toggle All
+                </a>
+            </p>
+
+            <div class="row">
+                <p class="border border-dark col bg-secondary fw-bold m-1 rounded">
+                    {{ coils|length }} coils
+                </p>
+                <p class="border border-dark col bg-success m-1 rounded">
+                    <b>{{ coils_active|length }}</b> on
+                </p>
+                <p class="border border-dark col bg-danger m-1 rounded">
+                    <b>{{ coils_inactive|length }}</b> off
+                </p>
+            </div>
+
+        </footer>
 
     </body>
 
