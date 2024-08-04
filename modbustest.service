@@ -1,0 +1,18 @@
+[Unit]
+Description=modbustest gunicorn Flask daemon
+Requires=modbustest.socket
+After=network.target
+
+[Service]
+Type=notify
+User=homeassistant
+Group=homeassistant
+WorkingDirectory=/home/homeassistant
+ExecStart=/home/homeassistant/modbus/venv/bin/gunicorn --config /home/homeassistant/modbus/gunicorn_configuration.py __init__:app
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
