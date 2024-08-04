@@ -45,11 +45,9 @@
     {%- else %}
         {%- set _ = coils_inactive.append(number) -%}
     {%- endif %}
-                <li class="border-0 card-text list-group-item" title="Toggle coil #{{ number }} from {{ value }} to {{ not value }}." value="{{ number }}">
+                <li class="border-0 card-text list-group-item list-group-item-text" title="Toggle coil #{{ number }} from {{ value }} to {{ not value }}." value="{{ number }}">
                     <b>{{ number }}</b>.
-                    <a class="border border-dark btn btn-{{ coil_class(value) }} list-group-item-text text-{{ coil_class(value) }}" href="{{ url_for('toggle', coil=number, value=not value) }}" role="button" aria-label="Toggle coil #{{ number }} from {{ value }} to {{ not value }}.">
-                        █
-                    </a>
+                    <a class="border border-dark btn btn-{{ coil_class(value) }} p-2 text-{{ coil_class(value) }}" href="{{ url_for('toggle', coil=number, value=not value) }}" role="button" aria-label="Toggle coil #{{ number }} from {{ value }} to {{ not value }}."></a>
                 </li>
 {%- endfor %}
             </ol>
