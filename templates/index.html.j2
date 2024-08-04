@@ -56,20 +56,25 @@
 
         <footer class="card-footer text-white">
 
-            <p class="card-text">
-                <a class="border border-dark btn btn-primary mx-3 p-2" href="{{ url_for('toggle_all') }}" role="button" aria-label="Toggle All Coils" title="Toggle All Coils">
-                    Toggle All
-                </a>
-                <span class="border border-dark text-success m-1 p-2 rounded" title="{{ coils_active|length }} on">
-                    <b>{{ coils_active|length }}</b> on
-                </span>
-                <span class="border border-dark text-danger m-1 p-2 rounded" title="{{ coils_inactive|length }} off">
-                    <b>{{ coils_inactive|length }}</b> off
-                </span>
-                <span class="border border-dark text-secondary mx-3 p-2 rounded" title="{{ coils|length }} total">
-                    <b>{{ coils|length }}</b> total
-                </span>
-            </p>
+            <div class="card-text">
+                <p>
+                    <a class="border border-dark btn btn-primary" href="{{ url_for('toggle_all') }}" role="button" aria-label="Toggle All Coils" title="Toggle All Coils">
+                        Toggle All
+                    </a>
+                </p>
+                <p>
+                    <span class="text-secondary" title="{{ coils|length }} total">
+                        <b>{{ coils|length }}</b> total:
+                    </span>
+                    <span class="text-success" title="{{ coils_active|length }} on">
+                        <b>{{ coils_active|length }}</b> on
+                    </span>
+                    <span class="text-secondary">/</span>
+                    <span class="text-danger" title="{{ coils_inactive|length }} off">
+                        <b>{{ coils_inactive|length }}</b> off
+                    </span>
+                </p>
+            </div>
 
         </footer>
 

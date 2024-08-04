@@ -13,7 +13,7 @@ def __pre(host=app.config["MODBUS_HOST"]):
     g.client.connect()
 
 
-def __discover(coils=range(16, 22)) -> dict:
+def __discover(coils=app.config["MODBUS_COILS"]) -> dict:
     coil_values = {}
     for coil in coils:
         value = g.client.read_coils(address=coil, count=1)
@@ -27,9 +27,13 @@ def index():
 
 
 @app.route("/toggle/<int:coil>/<int:value>/", methods=["GET"])
-def toggle(coil: int, value: int):
-    if coil not in __discover() or value not in (0, 1):
-        abort(400)
+def toggle(coil: int, value: (bool, int)):
+    if coil not in __discover():
+        abort(404)
+    if isinstance(value, int):
+        if value not in (0, 1):
+            abort(400)
+        value = bool(value)
     g.client.write_coil(address=coil, value=value)
     return index()
 
