@@ -45,9 +45,9 @@
     {%- else %}
         {%- set _ = coils_inactive.append(number) -%}
     {%- endif %}
-                <li class="border-0 card-text list-group-item fw-bold" title="Toggle coil #{{ number }} from {{ value }} to {{ not value }}." value="{{ number }}">
-                    {{ number }}.
-                    <a class="border border-dark btn btn-{{ coil_class(value) }} list-group-item-text m-0 p-0 text-{{ coil_class(value) }}" href="{{ url_for('toggle', coil=number, value=not value) }}" role="button" aria-label="Toggle coil #{{ number }} from {{ value }} to {{ not value }}.">
+                <li class="border-0 card-text list-group-item" title="Toggle coil #{{ number }} from {{ value }} to {{ not value }}." value="{{ number }}">
+                    <b>{{ number }}</b>.
+                    <a class="border border-dark btn btn-{{ coil_class(value) }} list-group-item-text my-2 text-{{ coil_class(value) }}" href="{{ url_for('toggle', coil=number, value=not value) }}" role="button" aria-label="Toggle coil #{{ number }} from {{ value }} to {{ not value }}.">
                         █
                     </a>
                 </li>
@@ -58,23 +58,20 @@
 
         <footer class="card-footer text-white">
 
-            <p>
-                <a class="border border-dark btn btn-secondary card-text" href="{{ url_for('toggle_all') }}" role="button">
+            <p class="card-text">
+                <a class="border border-dark btn btn-primary mx-3 my-2 p-2" href="{{ url_for('toggle_all') }}" role="button" aria-label="Toggle All Coils" title="Toggle All Coils">
                     Toggle All
                 </a>
-            </p>
-
-            <div class="row">
-                <p class="border border-dark col bg-secondary fw-bold m-1 rounded">
-                    {{ coils|length }} coils
-                </p>
-                <p class="border border-dark col bg-success m-1 rounded">
+                <span class="border border-dark text-success m-2 p-2 rounded" title="{{ coils_active|length }} on">
                     <b>{{ coils_active|length }}</b> on
-                </p>
-                <p class="border border-dark col bg-danger m-1 rounded">
+                </span>
+                <span class="border border-dark text-danger m-2 p-2 rounded" title="{{ coils_inactive|length }} off">
                     <b>{{ coils_inactive|length }}</b> off
-                </p>
-            </div>
+                </span>
+                <span class="border border-dark text-secondary mx-3 my-2 p-2 rounded" title="{{ coils|length }} total">
+                    <b>{{ coils|length }}</b> total
+                </span>
+            </p>
 
         </footer>
 
