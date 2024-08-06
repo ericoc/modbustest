@@ -25,43 +25,63 @@ def __discover(coils: list = app.config["MODBUS_COILS"]) -> dict:
 
 @app.route("/api/", methods=["GET"])
 @app.route("/api/all/", methods=["GET"])
-@app.route("/api/<int:coil>/", methods=["GET"])
-@app.route("/api/all/", methods=["POST"])
-@app.route("/api/<int:coil>/", methods=["POST"])
-@app.route("/api/all/<int:value>/", methods=["POST"])
-@app.route("/api/<int:coil>/<int:value>/", methods=["POST"])
-def api(coil: int = app.config["MODBUS_COILS"], value: int = None):
+def api_get_all():
+    resp = make_response(jsonify(coils=__discover(app.config["MODBUS_COILS"])))
+    resp.headers["Content-type"] = "application/json"
+    return resp
 
-    _status = 200
-    __coils = []
+
+@app.route("/api/all/", methods=["POST"])
+@app.route("/api/all/<int:value>/", methods=["POST"])
+def api_post_all(value: int = None):
+    set_coil = None
+    if value is not None:
+        if value not in (0, 1):
+            abort(400)
+        set_coil = bool(value)
+
+    for _coil, _existing in __discover().items():
+        if set_coil is None:
+            value = not _existing
+        if value != _existing:
+            g.client.write_coil(address=_coil, value=value)
+
+    return api_get_all()
+
+
+@app.route("/api/<int:coil>/", methods=["GET"])
+def api_get_coil(coil: int):
 
     if isinstance(coil, int):
         if coil not in app.config["MODBUS_COILS"]:
             abort(404)
-        __coils = [coil]
 
-    if not __coils:
-        __coils = app.config["MODBUS_COILS"]
+    resp = make_response(jsonify(coils=__discover([coil])))
+    resp.headers["Content-type"] = "application/json"
+    return resp
 
-    if request.method == "POST":
 
-        if value is not None:
-            if value not in (0, 1):
-                abort(400)
-            value = bool(value)
+@app.route("/api/<int:coil>/", methods=["POST"])
+@app.route("/api/<int:coil>/<int:value>/", methods=["POST"])
+def api_post_coil(coil: int, value: int = None):
 
-        _status = 201
-        for _coil, _existing in __discover(coils=__coils).items():
-            if value is None:
-                value = not _existing
-            if value != _existing:
-                g.client.write_coil(address=_coil, value=value)
-                _status = 202
+    if isinstance(coil, int):
+        if coil not in app.config["MODBUS_COILS"]:
+            abort(404)
+    existing = __discover(coils=[coil])
 
-    resp = make_response(
-        jsonify( coils=__discover(coils=__coils), status=_status),
-        _status
-    )
+    if value is not None:
+        if value not in (0, 1):
+            abort(400)
+        value = bool(value)
+
+    if value is None:
+        value = not existing[coil]
+
+    if value != existing:
+        g.client.write_coil(address=coil, value=value)
+
+    resp = make_response(jsonify(coils=__discover([coil])))
     resp.headers["Content-type"] = "application/json"
     return resp
 
@@ -69,26 +89,6 @@ def api(coil: int = app.config["MODBUS_COILS"], value: int = None):
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html.j2", coils=__discover())
-
-
-@app.route("/toggle/<int:coil>/", methods=["GET"])
-@app.route("/toggle/<int:coil>/<int:value>/", methods=["GET"])
-def toggle(coil: int, value: (bool, int, None) = None):
-    if coil not in __discover():
-        abort(404)
-    if isinstance(value, int):
-        if value not in (0, 1):
-            abort(400)
-        value = bool(value)
-    g.client.write_coil(address=coil, value=value)
-    return index()
-
-
-@app.route("/toggle/all/", methods=["GET"])
-def toggle_all():
-    for coil, value in __discover().items():
-        toggle(coil, not value)
-    return index()
 
 
 @app.teardown_appcontext
