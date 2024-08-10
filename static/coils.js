@@ -1,18 +1,13 @@
 async function sendAll (coils, action) {
     for (const coil of coils) {
-        if (action === "read") {
-            await coil.read();
-        }
-        if (action === "toggle") {
-            await coil.toggle();
-        }
+        if (action === "read") { await coil.read(); }
+        if (action === "toggle") { await coil.toggle(); }
     }
 }
 
 async function updateCounts (coils) {
-    let totalCount = 0;
-    let activeCount = 0;
-    let inactiveCount = 0;
+    let totalCount, activeCount, inactiveCount;
+    totalCount = activeCount = inactiveCount = 0;
     for (const coil of coils) {
         totalCount++;
         if (coil.value === true) { activeCount++; }
@@ -25,6 +20,10 @@ async function updateCounts (coils) {
 }
 
 const coils = [];
+
+document.getElementById("all").onclick = async () => {
+    await sendAll(coils, "toggle");
+};
 
 const Coil = class {
 
@@ -50,9 +49,8 @@ const Coil = class {
         checkSwitchInput.role = "switch";
         checkSwitchInput.name = this.number
         checkSwitchInput.id = this.number;
-        checkSwitchInput.onclick = () => { this.toggle(); };
+        checkSwitchInput.onclick = async () => { await this.toggle(); };
         this.button = checkSwitchInput;
-        this.read();
 
         checkSwitchDiv.appendChild(checkSwitchLabel);
         checkSwitchDiv.appendChild(checkSwitchInput);
@@ -61,7 +59,7 @@ const Coil = class {
     };
 
     async send(method) {
-        const xhr = new XMLHttpRequest()
+        const xhr = await new XMLHttpRequest()
         await xhr.open(method, `/api/${this.number}/`)
         await xhr.send()
         xhr.onreadystatechange = async () => {
@@ -73,6 +71,6 @@ const Coil = class {
         };
     };
 
-    async read() { return this.send("GET"); };
-    async toggle() { return this.send("POST"); };
+    async read() { await this.send("GET"); };
+    async toggle() { await this.send("POST"); };
 };

@@ -43,26 +43,28 @@
                         <b id="totalCount"></b> total:
                     </span>
                     <span class="text-success">
-                        <b id="activeCount"></b> on
+                         <b id="activeCount"></b> on
                     </span>
                     <span class="text-secondary">/</span>
                     <span class="text-danger">
                         <b id="inactiveCount"></b> off
                     </span>
                 </p>
-                <a class="border border-dark btn btn-primary" onclick="sendAll(coils, 'toggle')" role="button" aria-label="Toggle All Coils">
+                <a class="border border-dark btn btn-primary" id="all" role="button" aria-label="Toggle All Coils">
                     Toggle All
                 </a>
             </div>
 
         </footer>
+
         <script src="{{ url_for('static', filename='coils.js') }}"></script>
         <script>
-            const coilJSON = JSON.parse('{{ coils|tojson }}');
-            for (const [number, value] of Object.entries(coilJSON)) {
-                coils.push(new Coil(number, value));
+            for (const [number, value] of Object.entries(JSON.parse('{{ coils|tojson }}'))) {
+                const coil = new Coil(number, value);
+                coil.read();
+                coils.push(coil);
             }
-            window.setInterval(sendAll, 1000, coils, 'read');
+            window.setInterval(sendAll, 1000, coils, "read");
         </script>
 
     </body>
