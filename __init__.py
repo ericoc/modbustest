@@ -82,7 +82,11 @@ def api(coil: int = None, value: int = None):
 @app.route("/", methods=["GET"])
 def index():
     """Main index page."""
-    return render_template("index.html.j2", coils=discover())
+    return render_template(
+        "index.html.j2",
+        coils=discover(),
+        MODBUS_HOST=app.config["MODBUS_HOST"]
+    )
 
 
 @app.teardown_appcontext
